@@ -133,6 +133,10 @@ export default class NaturalLanguageDates extends Plugin {
     return this.parse(dateString, this.settings.timeFormat);
   }
 
+  parseWeek(dateString: string): NLDResult {
+    return this.parse(dateString, this.settings.weekFormat);
+  }
+
   async actionHandler(params: ObsidianProtocolData): Promise<void> {
     const { workspace } = this.app;
 
