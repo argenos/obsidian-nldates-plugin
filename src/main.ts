@@ -8,6 +8,7 @@ import {
   getParseCommand,
   getCurrentDateCommand,
   getCurrentTimeCommand,
+  getCurrentWeekCommand,
   getNowCommand,
 } from "./commands";
 import { getFormattedDate, getOrCreateDailyNote, parseTruthy } from "./utils";
@@ -48,6 +49,13 @@ export default class NaturalLanguageDates extends Plugin {
     });
 
     this.addCommand({
+      id: "nlp-parse-week",
+      name: "Parse natural language week",
+      callback: () => getParseCommand(this, "week"),
+      hotkeys: [],
+    });
+
+    this.addCommand({
       id: "nlp-now",
       name: "Insert the current date and time",
       callback: () => getNowCommand(this),
@@ -65,6 +73,13 @@ export default class NaturalLanguageDates extends Plugin {
       id: "nlp-time",
       name: "Insert the current time",
       callback: () => getCurrentTimeCommand(this),
+      hotkeys: [],
+    });
+
+    this.addCommand({
+      id: "nlp-week",
+      name: "Insert the current week",
+      callback: () => getCurrentWeekCommand(this),
       hotkeys: [],
     });
 
