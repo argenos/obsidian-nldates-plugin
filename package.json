@@ -27,7 +27,7 @@
     "typescript": "4.7.4"
   },
   "dependencies": {
-    "chrono-node": "github:liamcain/chrono",
+    "chrono-node": "github:jack2game/chrono",
     "obsidian-daily-notes-interface": "0.9.4"
   }
 }
