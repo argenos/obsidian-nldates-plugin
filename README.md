@@ -157,6 +157,9 @@ console.log(parsedResult.moment.format("YYYY")); // This should return 2021
 | `GG`        | `14`             | ISO 2 digit week year |
 | `W WW`      | `1..53`          | ISO week of year |
 | `E`         | `1..7`           | ISO day of week |
+| `HH`        | `00...23`        | 24-hour hour |
+| `hh`        | `1...12`         | 12-hour hour |
+| `a`         | `am,pm`          | 12-hour am/pm |
 
 For further information, see: [moment.js docs](https://momentjs.com/docs/#/parsing/string-format/).
 
