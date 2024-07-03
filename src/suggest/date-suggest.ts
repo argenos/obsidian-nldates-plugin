@@ -85,9 +85,29 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
       ].filter((items) => items.label.toLowerCase().startsWith(context.query));
     }
 
-    return [{ label: "Today" }, { label: "Yesterday" }, { label: "Tomorrow" }].filter(
-      (items) => items.label.toLowerCase().startsWith(context.query)
+    const firstChar = context.query.charAt(0);
+    const lowerCaseQuery =
+      firstChar != firstChar.toUpperCase() ? "lowercase" : "uppercase";
+
+    const dateSuggestions = {
+      uppercase: [
+        { label: "Today" },
+        { label: "Yesterday" },
+        { label: "Tomorrow" },
+      ],
+      lowercase: [
+        { label: "today" },
+        { label: "yesterday" },
+        { label: "tomorrow" },
+      ],
+    };
+
+    const dateSuggest = dateSuggestions[lowerCaseQuery].filter((items) =>
+      items.label.startsWith(context.query)
     );
+
+    return dateSuggest;
+    
   }
 
   renderSuggestion(suggestion: IDateCompletion, el: HTMLElement): void {
