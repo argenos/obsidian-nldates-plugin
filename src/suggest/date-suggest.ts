@@ -5,7 +5,6 @@ import {
   EditorSuggest,
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
-  MarkdownView,
   TFile,
 } from "obsidian";
 import type NaturalLanguageDates from "src/main";
@@ -16,8 +15,8 @@ interface IDateCompletion {
 }
 
 export default class DateSuggest extends EditorSuggest<IDateCompletion> {
+  app: App;
   private plugin: NaturalLanguageDates;
-  private app: App;
 
   constructor(app: App, plugin: NaturalLanguageDates) {
     super(app);
@@ -47,10 +46,15 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
   }
 
   getDateSuggestions(context: EditorSuggestContext): IDateCompletion[] {
-    if (context.query.match(/^time/)) {
+    if (context.query.match(/tim|min|hou|now/i)) {
       return ["now", "+15 minutes", "+1 hour", "-15 minutes", "-1 hour"]
         .map((val) => ({ label: `time:${val}` }))
-        .filter((item) => item.label.toLowerCase().startsWith(context.query));
+        .filter((item) => item.label.toLowerCase().contains(context.query));
+    }
+    if (context.query.match(/wee/i)) {
+      return ["this", "next", "last"]
+      .map((val) => ({ label: `week:${val} week` }))
+      .filter((item) => item.label.toLowerCase().contains(context.query));
     }
     if (context.query.match(/(next|last|this)/i)) {
       const reference = context.query.match(/(next|last|this)/i)[1];
@@ -71,22 +75,24 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
     }
 
     const relativeDate =
-      context.query.match(/^in ([+-]?\d+)/i) || context.query.match(/^([+-]?\d+)/i);
+      context.query.match(/in ([+-]?\d+)/i) || context.query.match(/([+-]?\d+)/i);
     if (relativeDate) {
       const timeDelta = relativeDate[1];
       return [
-        { label: `in ${timeDelta} minutes` },
-        { label: `in ${timeDelta} hours` },
+        { label: `time:in ${timeDelta} minutes` },
+        { label: `time:in ${timeDelta} hours` },
         { label: `in ${timeDelta} days` },
         { label: `in ${timeDelta} weeks` },
         { label: `in ${timeDelta} months` },
         { label: `${timeDelta} days ago` },
         { label: `${timeDelta} weeks ago` },
         { label: `${timeDelta} months ago` },
-      ].filter((items) => items.label.toLowerCase().startsWith(context.query));
+      ].filter((items) => items.label.toLowerCase().contains(context.query));
     }
 
-    return [{ label: "Today" }, { label: "Yesterday" }, { label: "Tomorrow" }].filter(
+    const defaultSuggestions = [{ label: "Today" }, { label: "Yesterday" }, { label: "Tomorrow" }];
+    const additionalSuggestions = this.plugin.settings.additionalSuggestions.map(x => {return {label: x}});
+    return additionalSuggestions.concat(defaultSuggestions).filter(
       (items) => items.label.toLowerCase().startsWith(context.query)
     );
   }
@@ -96,10 +102,7 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
   }
 
   selectSuggestion(suggestion: IDateCompletion, event: KeyboardEvent | MouseEvent): void {
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) {
-      return;
-    }
+    const { editor } = this.context;
 
     const includeAlias = event.shiftKey;
     let dateStr = "";
@@ -109,6 +112,9 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
       const timePart = suggestion.label.substring(5);
       dateStr = this.plugin.parseTime(timePart).formattedString;
       makeIntoLink = false;
+    } else if (suggestion.label.startsWith("week:")) {
+      const weekPart = suggestion.label.substring(5);
+      dateStr = this.plugin.parseWeek(weekPart).formattedString;
     } else {
       dateStr = this.plugin.parseDate(suggestion.label).formattedString;
     }
@@ -121,13 +127,13 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
       );
     }
 
-    activeView.editor.replaceRange(dateStr, this.context.start, this.context.end);
+    editor.replaceRange(dateStr, this.context.start, this.context.end);
   }
 
   onTrigger(
     cursor: EditorPosition,
     editor: Editor,
-    file: TFile
+    _: TFile
   ): EditorSuggestTriggerInfo {
     if (!this.plugin.settings.isAutosuggestEnabled) {
       return null;

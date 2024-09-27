@@ -8,6 +8,7 @@ import {
   getParseCommand,
   getCurrentDateCommand,
   getCurrentTimeCommand,
+  getCurrentWeekCommand,
   getNowCommand,
 } from "./commands";
 import { getFormattedDate, getOrCreateDailyNote, parseTruthy } from "./utils";
@@ -17,7 +18,6 @@ export default class NaturalLanguageDates extends Plugin {
   public settings: NLDSettings;
 
   async onload(): Promise<void> {
-    console.log("Loading natural language date parser plugin");
     await this.loadSettings();
 
     this.addCommand({
@@ -49,6 +49,13 @@ export default class NaturalLanguageDates extends Plugin {
     });
 
     this.addCommand({
+      id: "nlp-parse-week",
+      name: "Parse natural language week",
+      callback: () => getParseCommand(this, "week"),
+      hotkeys: [],
+    });
+
+    this.addCommand({
       id: "nlp-now",
       name: "Insert the current date and time",
       callback: () => getNowCommand(this),
@@ -66,6 +73,13 @@ export default class NaturalLanguageDates extends Plugin {
       id: "nlp-time",
       name: "Insert the current time",
       callback: () => getCurrentTimeCommand(this),
+      hotkeys: [],
+    });
+
+    this.addCommand({
+      id: "nlp-week",
+      name: "Insert the current week",
+      callback: () => getCurrentWeekCommand(this),
       hotkeys: [],
     });
 
@@ -134,6 +148,10 @@ export default class NaturalLanguageDates extends Plugin {
     return this.parse(dateString, this.settings.timeFormat);
   }
 
+  parseWeek(dateString: string): NLDResult {
+    return this.parse(dateString, this.settings.weekFormat);
+  }
+
   async actionHandler(params: ObsidianProtocolData): Promise<void> {
     const { workspace } = this.app;
 
@@ -142,15 +160,7 @@ export default class NaturalLanguageDates extends Plugin {
 
     if (date.moment.isValid()) {
       const dailyNote = await getOrCreateDailyNote(date.moment);
-
-      let leaf = workspace.activeLeaf;
-      if (newPane) {
-        leaf = workspace.splitActiveLeaf();
-      }
-
-      await leaf.openFile(dailyNote);
-
-      workspace.setActiveLeaf(leaf);
+      workspace.getLeaf(newPane).openFile(dailyNote);
     }
   }
 }
