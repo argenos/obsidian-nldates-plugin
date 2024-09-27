@@ -46,15 +46,15 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
   }
 
   getDateSuggestions(context: EditorSuggestContext): IDateCompletion[] {
-    if (context.query.match(/^time/)) {
+    if (context.query.match(/tim|min|hou|now/i)) {
       return ["now", "+15 minutes", "+1 hour", "-15 minutes", "-1 hour"]
         .map((val) => ({ label: `time:${val}` }))
-        .filter((item) => item.label.toLowerCase().startsWith(context.query));
+        .filter((item) => item.label.toLowerCase().contains(context.query));
     }
-    if (context.query.match(/week/i)) {
+    if (context.query.match(/wee/i)) {
       return ["this", "next", "last"]
       .map((val) => ({ label: `week:${val} week` }))
-      .filter((item) => item.label.toLowerCase().startsWith(context.query));
+      .filter((item) => item.label.toLowerCase().contains(context.query));
     }
     if (context.query.match(/(next|last|this)/i)) {
       const reference = context.query.match(/(next|last|this)/i)[1];
@@ -75,19 +75,19 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
     }
 
     const relativeDate =
-      context.query.match(/^in ([+-]?\d+)/i) || context.query.match(/^([+-]?\d+)/i);
+      context.query.match(/in ([+-]?\d+)/i) || context.query.match(/([+-]?\d+)/i);
     if (relativeDate) {
       const timeDelta = relativeDate[1];
       return [
-        { label: `in ${timeDelta} minutes` },
-        { label: `in ${timeDelta} hours` },
+        { label: `time:in ${timeDelta} minutes` },
+        { label: `time:in ${timeDelta} hours` },
         { label: `in ${timeDelta} days` },
         { label: `in ${timeDelta} weeks` },
         { label: `in ${timeDelta} months` },
         { label: `${timeDelta} days ago` },
         { label: `${timeDelta} weeks ago` },
         { label: `${timeDelta} months ago` },
-      ].filter((items) => items.label.toLowerCase().startsWith(context.query));
+      ].filter((items) => items.label.toLowerCase().contains(context.query));
     }
 
     const defaultSuggestions = [{ label: "Today" }, { label: "Yesterday" }, { label: "Tomorrow" }];
