@@ -5,7 +5,6 @@ import {
   EditorSuggest,
   EditorSuggestContext,
   EditorSuggestTriggerInfo,
-  MarkdownView,
   TFile,
 } from "obsidian";
 import type NaturalLanguageDates from "src/main";
@@ -16,8 +15,8 @@ interface IDateCompletion {
 }
 
 export default class DateSuggest extends EditorSuggest<IDateCompletion> {
+  app: App;
   private plugin: NaturalLanguageDates;
-  private app: App;
 
   constructor(app: App, plugin: NaturalLanguageDates) {
     super(app);
@@ -111,10 +110,7 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
   }
 
   selectSuggestion(suggestion: IDateCompletion, event: KeyboardEvent | MouseEvent): void {
-    const activeView = this.app.workspace.getActiveViewOfType(MarkdownView);
-    if (!activeView) {
-      return;
-    }
+    const { editor } = this.context;
 
     const includeAlias = event.shiftKey;
     const invertMakeIntoLink = event.altKey;
@@ -140,7 +136,7 @@ export default class DateSuggest extends EditorSuggest<IDateCompletion> {
       );
     }
 
-    activeView.editor.replaceRange(dateStr, this.context.start, this.context.end);
+    editor.replaceRange(dateStr, this.context.start, this.context.end);
   }
 
   onTrigger(
