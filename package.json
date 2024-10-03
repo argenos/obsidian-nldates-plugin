@@ -19,15 +19,15 @@
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "5.3.1",
     "@typescript-eslint/parser": "5.3.1",
-    "rollup": "^2.60.0",
     "eslint": "8.2.0",
     "obsidian": "latest",
     "prettier": "2.4.1",
+    "rollup": "^2.60.0",
     "tslib": "2.4.0",
     "typescript": "4.7.4"
   },
   "dependencies": {
-    "chrono-node": "github:liamcain/chrono",
+    "chrono-node": "^2.7.7",
     "obsidian-daily-notes-interface": "0.9.4"
   }
 }

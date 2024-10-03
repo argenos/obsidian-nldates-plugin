@@ -1,12 +1,11 @@
-import chrono, { Chrono, Parser } from "chrono-node";
+import { Chrono, Parser } from "chrono-node";
 import type { Moment } from "moment";
 
 import { DayOfWeek } from "./settings";
 import {
-  ORDINAL_NUMBER_PATTERN,
   getLastDayOfMonth,
   getLocaleWeekStart,
-  getWeekNumber,
+  ORDINAL_NUMBER_PATTERN,
   parseOrdinalNumberPattern,
 } from "./utils";
 
@@ -16,20 +15,9 @@ export interface NLDResult {
   moment: Moment;
 }
 
-function getLocalizedChrono(): Chrono {
-  const locale = window.moment.locale();
-
-  switch (locale) {
-    case "en-gb":
-      return new Chrono(chrono.en.createCasualConfiguration(true));
-    default:
-      return new Chrono(chrono.en.createCasualConfiguration(false));
-  }
-}
-
 function getConfiguredChrono(): Chrono {
-  const localizedChrono = getLocalizedChrono();
-  localizedChrono.parsers.push({
+  const chrono = new Chrono();
+  chrono.parsers.push({
     pattern: () => {
       return /\bChristmas\b/i;
     },
@@ -41,7 +29,7 @@ function getConfiguredChrono(): Chrono {
     },
   });
 
-  localizedChrono.parsers.push({
+  chrono.parsers.push({
     pattern: () => new RegExp(ORDINAL_NUMBER_PATTERN),
     extract: (_context, match) => {
       return {
@@ -50,7 +38,7 @@ function getConfiguredChrono(): Chrono {
       };
     },
   } as Parser);
-  return localizedChrono;
+  return chrono;
 }
 
 export default class NLDParser {
@@ -70,13 +58,11 @@ export default class NLDParser {
         ? getLocaleWeekStart()
         : weekStartPreference;
 
-    const locale = {
-      weekStart: getWeekNumber(weekStart),
-    };
-
     const thisDateMatch = selectedText.match(/this\s([\w]+)/i);
     const nextDateMatch = selectedText.match(/next\s([\w]+)/i);
-    const lastDayOfMatch = selectedText.match(/(last day of|end of)\s*([^\n\r]*)/i);
+    const lastDayOfMatch = selectedText.match(
+      /(last day of|end of)\s*([^\n\r]*)/i,
+    );
     const midOf = selectedText.match(/mid\s([\w]+)/i);
 
     const referenceDate = weekdayIsCertain
@@ -128,6 +114,8 @@ export default class NLDParser {
       });
     }
 
-    return parser.parseDate(selectedText, referenceDate, { locale });
+    return parser.parseDate(selectedText, referenceDate, {
+      forwardDate: true,
+    });
   }
 }

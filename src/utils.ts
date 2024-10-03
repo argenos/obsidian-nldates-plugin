@@ -1,5 +1,12 @@
 import { Moment } from "moment";
-import { App, Editor, EditorRange, EditorPosition, normalizePath, TFile } from "obsidian";
+import {
+  App,
+  Editor,
+  EditorPosition,
+  EditorRange,
+  normalizePath,
+  TFile,
+} from "obsidian";
 import {
   createDailyNote,
   getAllDailyNotes,
@@ -21,14 +28,14 @@ const daysOfWeek: Omit<DayOfWeek, "locale-default">[] = [
 export default function getWordBoundaries(editor: Editor): EditorRange {
   const cursor = editor.getCursor();
 
-    const pos = editor.posToOffset(cursor);
-    const word = (editor as any).cm.state.wordAt(pos);
-    const wordStart = editor.offsetToPos(word.from);
-    const wordEnd = editor.offsetToPos(word.to);
-    return {
-      from: wordStart,
-      to: wordEnd,
-    };
+  const pos = editor.posToOffset(cursor);
+  const word = (editor as any).cm.state.wordAt(pos);
+  const wordStart = editor.offsetToPos(word.from);
+  const wordEnd = editor.offsetToPos(word.to);
+  return {
+    from: wordStart,
+    to: wordEnd,
+  };
 }
 
 export function getSelectedText(editor: Editor): string {
@@ -45,7 +52,7 @@ export function adjustCursor(
   editor: Editor,
   cursor: EditorPosition,
   newStr: string,
-  oldStr: string
+  oldStr: string,
 ): void {
   const cursorOffset = newStr.length - oldStr.length;
   editor.setCursor({
@@ -66,17 +73,17 @@ export function parseTruthy(flag: string): boolean {
   return ["y", "yes", "1", "t", "true"].indexOf(flag.toLowerCase()) >= 0;
 }
 
-export function getWeekNumber(dayOfWeek: Omit<DayOfWeek, "locale-default">): number {
-  return daysOfWeek.indexOf(dayOfWeek);
-}
-
 export function getLocaleWeekStart(): Omit<DayOfWeek, "locale-default"> {
   // @ts-ignore
   const startOfWeek = window.moment.localeData()._week.dow;
   return daysOfWeek[startOfWeek];
 }
 
-export function generateMarkdownLink(app: App, subpath: string, alias?: string) {
+export function generateMarkdownLink(
+  app: App,
+  subpath: string,
+  alias?: string,
+) {
   const useMarkdownLinks = (app.vault as any).getConfig("useMarkdownLinks");
   const path = normalizePath(subpath);
 
@@ -95,7 +102,9 @@ export function generateMarkdownLink(app: App, subpath: string, alias?: string) 
   }
 }
 
-export async function getOrCreateDailyNote(date: Moment): Promise<TFile | null> {
+export async function getOrCreateDailyNote(
+  date: Moment,
+): Promise<TFile | null> {
   // Borrowed from the Slated plugin:
   // https://github.com/tgrosinger/slated-obsidian/blob/main/src/vault.ts#L17
   const desiredNote = getDailyNote(date, getAllDailyNotes());
@@ -108,7 +117,10 @@ export async function getOrCreateDailyNote(date: Moment): Promise<TFile | null> 
 // Source `chrono`:
 // https://github.com/wanasit/chrono/blob/47f11da6b656cd5cb61f246e8cca706983208ded/src/utils/pattern.ts#L8
 // Copyright (c) 2014, Wanasit Tanakitrungruang
-type DictionaryLike = string[] | { [word: string]: unknown } | Map<string, unknown>;
+type DictionaryLike =
+  | string[]
+  | { [word: string]: unknown }
+  | Map<string, unknown>;
 
 function extractTerms(dictionary: DictionaryLike): string[] {
   let keys: string[];
@@ -176,7 +188,7 @@ const ORDINAL_WORD_DICTIONARY: { [word: string]: number } = {
 };
 
 export const ORDINAL_NUMBER_PATTERN = `(?:${matchAnyPattern(
-  ORDINAL_WORD_DICTIONARY
+  ORDINAL_WORD_DICTIONARY,
 )}|[0-9]{1,2}(?:st|nd|rd|th)?)`;
 
 export function parseOrdinalNumberPattern(match: string): number {
