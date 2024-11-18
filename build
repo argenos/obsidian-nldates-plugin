@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DEST="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Main/.obsidian/plugins/nldates-obsidian"
+DEST="$HOME/Library/Mobile Documents/iCloud~md~obsidian/Documents/Personal/.obsidian/plugins/nldates-obsidian"
 
 npm run build
 cp main.js manifest.json "$DEST/"
