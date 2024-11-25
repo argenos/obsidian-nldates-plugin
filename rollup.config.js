@@ -1,7 +1,6 @@
 import typescript from "@rollup/plugin-typescript";
 import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
-import esbuild from "rollup-plugin-esbuild";
 import { terser } from "rollup-plugin-terser";
 
 export default {
@@ -13,5 +12,5 @@ export default {
     exports: "default",
   },
   external: ["obsidian"],
-  plugins: [typescript(), nodeResolve({ browser: true }), commonjs(), esbuild({ minify: true }), terser()],
+  plugins: [typescript(), nodeResolve({ browser: true }), commonjs(), terser()],
 };
